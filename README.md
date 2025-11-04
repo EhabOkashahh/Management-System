@@ -23,7 +23,7 @@ This project demonstrates clean architectural principles through the use of **N-
   - Departments
   - Roles
   - User Profiles
-- **Admin Dashboard** with analytics and management tools.
+- **Admin Dashboard** Simple Dashboard can Modify on Users and Roles .
 - **Profile Photos** for users and employees.
 - **Responsive and clean UI** using Bootstrap and Razor views.
 
@@ -43,7 +43,6 @@ The solution follows a clear **N-Tier architecture**, divided into:
 | **Presentation Layer (UI)** | ASP.NET MVC web project handling views, controllers, and user interactions. |
 | **Business Logic Layer (BLL)** | Contains services, business rules, and application logic. |
 | **Data Access Layer (DAL)** | Handles Entity Framework operations using Repository and Unit of Work patterns. |
-| **Core Layer / Entities** | Defines domain models, interfaces, and shared contracts. |
 
 ---
 
