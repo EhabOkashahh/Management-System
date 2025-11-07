@@ -81,7 +81,7 @@ namespace ASP.NET.Assignment.PL.Controllers
             if (ModelState.IsValid) {
                 var olddept = await _unitOfWork.DepartmentRepository.Value.GetAsync(id.Value);
                 var department = _mapper.Map(createDepartmentDto, olddept);
-                _unitOfWork.DepartmentRepository.Value.Update(department);
+                await _unitOfWork.DepartmentRepository.Value.Update(department);
                 var state = _unitOfWork.ApplyToDB();
             }
             return RedirectToAction(nameof(Index));
