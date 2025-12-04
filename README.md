@@ -1,6 +1,6 @@
-# 📋 Management System (SMS)
+#  Management System (SMS)
 
-## 🏗️ Overview
+##  Overview
 The **Management System (SMS)** is a secure and scalable web application built with **ASP.NET MVC**.  
 It provides a flexible platform for managing entities such as **users**, **departments**, and **roles**, making it adaptable to many types of organizations or use cases.
 
@@ -10,14 +10,14 @@ This project demonstrates clean architectural principles through the use of **N-
 
 ---
 
-## ✨ Key Features
-### 🔐 Authentication & Authorization
+##  Key Features
+###  Authentication & Authorization
 - **Google OAuth Login** for quick and secure access.
 - **Role-Based Access Control (RBAC)** — only admins can manage users, roles, and departments.
 - **Password Reset via Email**, allowing users to recover their accounts securely.
 - **Phone Number Verification** using **Twilio API** for an extra layer of security.
 
-### 👤 User & Admin Features
+###  User & Admin Features
 - **CRUD Operations** for:
   - Employees
   - Departments
@@ -27,7 +27,7 @@ This project demonstrates clean architectural principles through the use of **N-
 - **Profile Photos** for users and employees.
 - **Responsive and clean UI** using Bootstrap and Razor views.
 
-### 🧩 Architecture & Patterns
+###  Architecture & Patterns
 - **N-Tier Architecture** to separate presentation, business logic, and data access layers.
 - **Repository Pattern** to abstract database logic and make it reusable.
 - **Unit of Work Pattern** to coordinate and manage database transactions.
@@ -35,7 +35,7 @@ This project demonstrates clean architectural principles through the use of **N-
 
 ---
 
-## 🧱 Project Structure
+##  Project Structure
 The solution follows a clear **N-Tier architecture**, divided into:
 
 | Layer | Description |
@@ -46,7 +46,7 @@ The solution follows a clear **N-Tier architecture**, divided into:
 
 ---
 
-## 🛠️ Technologies Used
+##  Technologies Used
 | Category | Technology |
 |-----------|-------------|
 | **Frontend** | HTML5, CSS3, Bootstrap, JavaScript, Razor Views |
@@ -58,7 +58,7 @@ The solution follows a clear **N-Tier architecture**, divided into:
 
 ---
 
-## 🧑‍💼 Roles in the System
+## Roles in the System
 | Role | Description |
 |------|--------------|
 | **Admin** | Full access to the dashboard. Can manage users, departments, and roles. |
@@ -66,7 +66,7 @@ The solution follows a clear **N-Tier architecture**, divided into:
 
 ---
 
-## 🔄 Workflow
+##  Workflow
 1. A user can **register or log in** (manually or using Google).
 2. After login, **phone number verification** (via Twilio) ensures account security.
 3. Admins can **add, edit, or delete** departments, employees, and roles.
@@ -75,14 +75,14 @@ The solution follows a clear **N-Tier architecture**, divided into:
 
 ---
 
-## 🧩 Design Patterns Used
+##  Design Patterns Used
 - **Repository Pattern** — abstracts data layer for cleaner and testable code.
 - **Unit of Work Pattern** — ensures multiple database operations are handled within a single transaction.
 - **Dependency Injection** — promotes flexibility and maintainability.
 
 ---
 
-## 🔐 Security Highlights
+##  Security Highlights
 - Role-based authorization using `[Authorize]` attribute.
 - OAuth 2.0 for social login (Google).
 - Encrypted password storage and secure token handling.
