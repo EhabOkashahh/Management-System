@@ -1,17 +1,249 @@
 ﻿@model CreateDepartmentDto
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Department";
 }
 
-<h1 class="mb-3">Edit</h1>
-<form asp-action="Edit">
-    <partial name="PartialViews/_FormView">
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">Edit Department</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Department">Departments</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@ViewBag.ID">Details</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
 
-    <button type="submit" class="btn btn-primary mt-2">Save Changes</button>
-    <a class ="btn btn-light mt-2" asp-action="Details" asp-route-id ="@ViewBag.ID" >Back To Details Page</a>
-</form>
+    <!-- Edit Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>Update Department Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" id="editDepartmentForm">
+                        <!-- Validation Summary -->
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Please correct the following errors:</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
 
-@section ValidationSection{
+                        <!-- Form Fields -->
+                        <partial name="PartialViews/_FormView" />
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary btn-lg" id="saveBtn">
+                                <i class="bi bi-check-circle me-2"></i>Save Changes
+                            </button>
+                            <a class="btn btn-outline-secondary btn-lg" asp-action="Details" asp-route-id="@ViewBag.ID">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="reset" class="btn btn-outline-danger btn-lg ms-auto" id="resetBtn">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>Reset Form
+                            </button>
+                        </div>
+
+                        <!-- Help Text -->
+                        <div class="alert alert-info mt-3 d-flex align-items-start" role="alert">
+                            <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                            <div>
+                                <small><strong>Note:</strong> Changes will be saved immediately and reflected across all associated employees.</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Additional Information Card -->
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h6 class="text-muted mb-2">
+                        <i class="bi bi-clock-history me-2"></i>Last Modified
+                    </h6>
+                    <p class="mb-0 text-muted">
+                        <small>Make sure all information is accurate before saving changes.</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="confirmModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirm Changes
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to save these changes? This will update the department information.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmSave">
+                    <i class="bi bi-check-circle me-1"></i>Confirm Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+    }
+
+    #editDepartmentForm .form-control:focus,
+    #editDepartmentForm .form-select:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    .btn-lg {
+        padding: 0.625rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .alert-info {
+        background-color: #e7f3ff;
+        border-color: #b3d9ff;
+        color: #004085;
+    }
+
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    @@media (max-width: 768px) {
+        .d-flex.gap-2
+
+    {
+        flex-direction: column;
+    }
+
+    .d-flex.gap-2 .btn {
+        width: 100%;
+    }
+
+    .d-flex.gap-2 .ms-auto {
+        margin-left: 0 !important;
+    }
+
+    }
+
+    /* Loading State */
+    .btn.loading {
+        position: relative;
+        color: transparent;
+    }
+
+        .btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spinner 0.6s linear infinite;
+        }
+
+    @@keyframes spinner {
+        to
+           {
+        transform: rotate(360deg);
+     }
+
+    }
+</style>
+
+@section ValidationSection {
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Form submission with loading state
+            $('#editDepartmentForm').on('submit', function(e) {
+                if ($(this).valid()) {
+                    const saveBtn = $('#saveBtn');
+                    saveBtn.addClass('loading').prop('disabled', true);
+
+                    // Optional: Add a slight delay to show loading state
+                    // Remove this setTimeout if you don't want the delay
+                    setTimeout(function() {
+                        // Form will submit naturally
+                    }, 300);
+                }
+            });
+
+            // Reset button confirmation
+            $('#resetBtn').on('click', function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to reset all changes?')) {
+                    $('#editDepartmentForm')[0].reset();
+                    // Clear validation messages
+                    $('#editDepartmentForm').validate().resetForm();
+                }
+            });
+
+            // Optional: Unsaved changes warning
+            let formChanged = false;
+            $('#editDepartmentForm :input').on('change', function() {
+                formChanged = true;
+            });
+
+            $('a[href]').not('[href^="#"]').on('click', function(e) {
+                if (formChanged) {
+                    if (!confirm('You have unsaved changes. Are you sure you want to leave?')) {
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            $('#editDepartmentForm').on('submit', function() {
+                formChanged = false;
+            });
+
+            // Custom validation messages styling
+            $.validator.setDefaults({
+                errorElement: 'span',
+                errorClass: 'invalid-feedback',
+                highlight: function(element) {
+                    $(element).addClass('is-invalid').removeClass('is-valid');
+                },
+                unhighlight: function(element) {
+                    $(element).removeClass('is-invalid').addClass('is-valid');
+                }
+            });
+        });
+    </script>
 }

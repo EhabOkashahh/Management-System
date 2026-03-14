@@ -1,30 +1,297 @@
-﻿@model Employee 
-
+﻿@model Employee
 @{
     ViewData["Title"] = "Delete";
 }
 
-<center>
-        <h1>Choose Deletion Method</h1>
-    <form asp-action="Delete" method="post">
-        <select name="deleteOption" class="form-select">
-            <option value="0"></option>
-            <option value="1">Deactivate</option>
-            <option value="2">Delete</option>
-        </select>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">Delete Employee</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Employees">Employees</a></li>
+                    <li class="breadcrumb-item"><a asp-action="Details" asp-route-id="@Model.Id">Details</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Delete</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
 
-        <button type="submit" class=" mt-3 btn btn-danger">Confirm</button>
-    </form>
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-trash me-2"></i>Choose Deletion Method
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Error:</strong> @ViewBag.ErrorMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
 
+                    <div class="employee-info-card bg-light p-3 rounded mb-4">
+                        <div class="d-flex align-items-center">
+                            <div class="employee-avatar me-3">
+                                <img src="~/Files/Images/@Model.ImageName"
+                                     alt="@Model.Name"
+                                     onerror="this.src='/images/default-avatar.png'"
+                                     class="rounded-circle">
+                            </div>
+                            <div>
+                                <h6 class="mb-1">@Model.Name</h6>
+                                <p class="text-muted small mb-0">Employee ID: @Model.Id</p>
+                            </div>
+                        </div>
+                    </div>
 
-    @if (ViewBag.ErrorMessage != null)
-    {
-        <div class="m-3 alert alert-danger">@ViewBag.ErrorMessage</div>
+                    <form asp-action="Delete" method="post" id="deleteForm">
+                        <div class="mb-4">
+                            <label for="deleteOption" class="form-label fw-bold">
+                                <i class="bi bi-list-ul me-2"></i>Select Deletion Method
+                            </label>
+                            <select name="deleteOption" id="deleteOption" class="form-select form-select-lg" required>
+                                <option value="" selected disabled>-- Select an option --</option>
+                                <option value="1">Deactivate (Soft Delete)</option>
+                                <option value="2">Permanently Delete</option>
+                            </select>
+                            <div class="form-text mt-2" id="optionHelp"></div>
+                        </div>
+
+                        <div class="alert alert-warning d-flex align-items-start mb-4" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2 mt-1"></i>
+                            <div>
+                                <small>
+                                    <strong>Warning:</strong> This action will affect the employee record.
+                                    Please choose carefully based on your requirements.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 pt-3 border-top">
+                            <button type="submit" class="btn btn-danger btn-lg" id="confirmBtn" disabled>
+                                <i class="bi bi-check-circle me-2"></i>Confirm
+                            </button>
+                            <a class="btn btn-outline-secondary btn-lg ms-auto" asp-action="Index">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>Deletion Methods
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="method-info mb-3">
+                        <h6 class="text-primary">
+                            <i class="bi bi-toggle-off me-2"></i>Deactivate
+                        </h6>
+                        <p class="small text-muted mb-0">
+                            Employee record will be hidden but data remains in the system.
+                            Can be reactivated later if needed.
+                        </p>
+                    </div>
+                    <hr>
+                    <div class="method-info">
+                        <h6 class="text-danger">
+                            <i class="bi bi-trash-fill me-2"></i>Permanently Delete
+                        </h6>
+                        <p class="small text-muted mb-0">
+                            Employee record will be completely removed from the system.
+                            This action cannot be undone.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2" id="modalMessage"></p>
+                <p class="text-danger small mb-0">
+                    <strong>This action will be applied immediately.</strong>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    <i class="bi bi-check-circle me-1"></i>Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 0.5rem;
     }
 
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        padding: 1rem 1.25rem;
+    }
 
-</center>
+    .employee-avatar {
+        width: 60px;
+        height: 60px;
+        overflow: hidden;
+    }
 
+        .employee-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
+    .employee-info-card {
+        border: 1px solid #dee2e6;
+    }
 
-  
+    .btn-lg {
+        padding: 0.625rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+    }
+
+    .btn.loading {
+        position: relative;
+        color: transparent;
+    }
+
+        .btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spinner 0.6s linear infinite;
+        }
+
+    keyframes spinner {
+        to
+
+    {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    .method-info h6 {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+
+    media (max-width: 992px) {
+        .col-lg-4
+
+    {
+        margin-top: 1rem;
+    }
+
+    }
+
+    media (max-width: 768px) {
+        .d-flex.gap-2
+
+    {
+        flex-direction: column;
+    }
+
+    .d-flex.gap-2 .btn {
+        width: 100%;
+    }
+
+    .d-flex.gap-2 .ms-auto {
+        margin-left: 0 !important;
+    }
+
+    }
+</style>
+
+@section ValidationSection {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#deleteOption').on('change', function() {
+                const value = $(this).val();
+                const helpText = $('#optionHelp');
+                const confirmBtn = $('#confirmBtn');
+
+                if (value === '1') {
+                    helpText.html('<i class="bi bi-info-circle me-1"></i>The employee will be deactivated and hidden from active lists.');
+                    helpText.removeClass('text-danger').addClass('text-primary');
+                    confirmBtn.prop('disabled', false);
+                } else if (value === '2') {
+                    helpText.html('<i class="bi bi-exclamation-triangle me-1"></i><strong>Warning:</strong> This will permanently remove all employee data.');
+                    helpText.removeClass('text-primary').addClass('text-danger');
+                    confirmBtn.prop('disabled', false);
+                } else {
+                    helpText.html('');
+                    confirmBtn.prop('disabled', true);
+                }
+            });
+
+            $('#deleteForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const deleteOption = $('#deleteOption').val();
+                const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+                const modalMessage = $('#modalMessage');
+
+                if (deleteOption === '1') {
+                    modalMessage.text('Are you sure you want to deactivate this employee? The record will be hidden but can be reactivated later.');
+                } else if (deleteOption === '2') {
+                    modalMessage.text('Are you sure you want to permanently delete this employee? This action cannot be undone and all data will be lost.');
+                }
+
+                modal.show();
+            });
+
+            $('#confirmDelete').on('click', function() {
+                const confirmBtn = $('#confirmBtn');
+                confirmBtn.addClass('loading').prop('disabled', true);
+                $('#deleteForm').off('submit').submit();
+            });
+
+            setTimeout(function() {
+                $('.alert-danger').fadeOut('slow');
+            }, 7000);
+        });
+    </script>
+}

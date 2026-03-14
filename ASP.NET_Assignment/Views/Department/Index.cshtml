@@ -1,47 +1,343 @@
 ﻿@model IEnumerable<Department>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Departments";
     string? Message = TempData["Message"] as string;
+    var departmentCount = Model?.Count() ?? 0;
 }
 
-<h1>All Departments</h1>
-<a asp-action="Create" asp-controller="Department" class="btn btn-primary m-4">Create Department</a>
-@if(Message is not null){
-<div class="alert-success p-2" >
-    <h4>@Message</h4>
-</div>
-}
-
-@if(Model.Count() > 0)
-{
-    <table class="table table-hover table-striped">
-        <thead>
-            <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Date Of Creation</th>
-                <th>Details</th>
-                <th>Update</th>
-                <th>Delete</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var item in Model)
-            {
-                <tr>
-                    <td>@item.Code</td>
-                    <td>@item.Name</td>
-                    <td>@item.DateOfCreation</td>
-                    <partial name="_ButtonPartialViews" model="@item.Id.ToString()" />
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <div class="alert alert-info">
-        <h4>There are no Departments</h4>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="bi bi-building me-2"></i>Departments Management
+            </h1>
+            <p class="text-muted mb-0">Manage and organize your company departments</p>
+        </div>
+        <div>
+            <a asp-action="Create" asp-controller="Department" class="btn btn-primary btn-lg shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i>Create Department
+            </a>
+        </div>
     </div>
-}
 
+    <!-- Success/Info Message -->
+    @if (Message is not null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <strong>Success!</strong> @Message
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="text-muted mb-0 small">Total Departments</h6>
+                            <h3 class="mb-0 fw-bold">@departmentCount</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-success bg-opacity-10 text-success">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="text-muted mb-0 small">Active Today</h6>
+                            <h3 class="mb-0 fw-bold">@departmentCount</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Departments Table Card -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2"></i>All Departments
+                </h5>
+                <div class="d-flex gap-2">
+                    <!-- Search Box -->
+                    <div class="input-group input-group-sm" style="max-width: 250px;">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" id="searchInput" placeholder="Search departments...">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            @if (departmentCount > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="departmentsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 100px;" class="sortable" data-column="code">
+                                    Code <i class="bi bi-arrow-down-up text-muted small"></i>
+                                </th>
+                                <th class="sortable" data-column="name">
+                                    Name <i class="bi bi-arrow-down-up text-muted small"></i>
+                                </th>
+                                <th style="width: 200px;" class="sortable" data-column="date">
+                                    Date of Creation <i class="bi bi-arrow-down-up text-muted small"></i>
+                                </th>
+                                <th style="width: 240px;" class="text-center">Actions</th>
+                                <th style="width: 240px;" class="text-center">Deltails</th>
+                                <th style="width: 240px;" class="text-center">Update</th>
+                                <th style="width: 240px;" class="text-center">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary bg-opacity-10 text-dark fw-semibold">@item.Code</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="dept-avatar bg-primary bg-opacity-10 text-primary">
+                                                @item.Name?.Substring(0, 1).ToUpper()
+                                            </div>
+                                            <div class="ms-2">
+                                                <div class="fw-semibold">@item.Name</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-calendar3 text-muted me-2"></i>
+                                            <span>@item.DateOfCreation.ToString("MMM dd, yyyy")</span>
+                                        </div>
+                                        <small class="text-muted">@item.DateOfCreation.ToString("hh:mm tt")</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <partial name="_ButtonPartialViews" model="@item.Id.ToString()" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-inbox display-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted mb-2">No Departments Found</h4>
+                    <p class="text-muted mb-4">Get started by creating your first department</p>
+                    <a asp-action="Create" asp-controller="Department" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Create Your First Department
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Statistics Cards */
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    /* Department Avatar */
+    .dept-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 0.375rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    /* Table Styles */
+    .table > :not(caption) > * > * {
+        padding: 1rem 0.75rem;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.15s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+    }
+
+        .sortable:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+    /* Card Styles */
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        padding: 1rem 1.25rem;
+    }
+
+    /* Search Input */
+    .input-group .form-control:focus {
+        box-shadow: none;
+        border-color: #dee2e6;
+    }
+
+    .input-group-text {
+        border-color: #dee2e6;
+    }
+
+    /* Alert Styles */
+    .alert {
+        border-radius: 0.5rem;
+        border: none;
+    }
+
+    /* Gap utility for older Bootstrap versions */
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .d-flex.justify-content-between
+
+    {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+
+    .d-flex.justify-content-between > div {
+        width: 100%;
+    }
+
+    .btn-lg {
+        width: 100%;
+    }
+
+    .card-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .input-group {
+        max-width: 100% !important;
+    }
+
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const tableRows = document.querySelectorAll('#departmentsTable tbody tr');
+
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+
+        // Simple sorting functionality
+        const sortableHeaders = document.querySelectorAll('.sortable');
+        sortableHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const table = document.getElementById('departmentsTable');
+                const tbody = table.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const columnIndex = Array.from(this.parentElement.children).indexOf(this);
+                const isAscending = this.classList.contains('asc');
+
+                rows.sort((a, b) => {
+                    const aText = a.children[columnIndex].textContent.trim();
+                    const bText = b.children[columnIndex].textContent.trim();
+
+                    return isAscending ?
+                        bText.localeCompare(aText) :
+                        aText.localeCompare(bText);
+                });
+
+                // Remove all sorting classes
+                sortableHeaders.forEach(h => h.classList.remove('asc', 'desc'));
+
+                // Add appropriate class
+                this.classList.add(isAscending ? 'desc' : 'asc');
+
+                // Reappend sorted rows
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+
+        // Filter functionality
+        const filterItems = document.querySelectorAll('[data-filter]');
+        filterItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const filter = this.getAttribute('data-filter');
+
+                // Here you can implement different filter logic
+                console.log('Filter by:', filter);
+
+                // Example: You could sort by date or other criteria
+            });
+        });
+
+        // Auto-dismiss alerts after 5 seconds
+        const alerts = document.querySelectorAll('.alert:not(.alert-info)');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        });
+    });
+</script>

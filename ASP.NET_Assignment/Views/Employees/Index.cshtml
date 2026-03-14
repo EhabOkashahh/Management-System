@@ -1,102 +1,524 @@
 ﻿@model IEnumerable<Employee>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Employees";
+    var employeeCount = Model?.Count() ?? 0;
+    var activeEmployees = Model?.Count(e => e.IsActive && !e.IsDeleted) ?? 0;
+    var inactiveEmployees = employeeCount - activeEmployees;
 }
 
-<h1 class="m-3">All Employees</h1>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">
+                <i class="bi bi-people-fill me-2"></i>Employee Management
+            </h1>
+            <p class="text-muted mb-0">Manage and organize your workforce</p>
+        </div>
+        <div>
+            <a asp-action="Create" asp-controller="Employees" class="btn btn-primary btn-lg shadow-sm">
+                <i class="bi bi-person-plus me-2"></i>Add New Employee
+            </a>
+        </div>
+    </div>
 
+    <!-- Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="text-muted mb-0 small">Total Employees</h6>
+                            <h3 class="mb-0 fw-bold">@employeeCount</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-success bg-opacity-10 text-success">
+                            <i class="bi bi-person-check"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="text-muted mb-0 small">Active</h6>
+                            <h3 class="mb-0 fw-bold">@activeEmployees</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                            <i class="bi bi-person-dash"></i>
+                        </div>
+                        <div class="ms-3">
+                            <h6 class="text-muted mb-0 small">Inactive</h6>
+                            <h3 class="mb-0 fw-bold">@inactiveEmployees</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div >
-    <form class="d-flex justify-content-around">
-        <input class="form-control" placeholder="Enter Name" type="text" id="Searchtxt" name="SearchText">
-        <button class="btn btn-success">Search</button>
-    </form>
+    <!-- Search and Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form class="row g-3" id="searchForm">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input class="form-control border-start-0 ps-0"
+                               placeholder="Search by name, email, or phone..."
+                               type="text"
+                               id="Searchtxt"
+                               name="SearchText">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employees Table Card -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-list-ul me-2 m-1"></i>All Employees</h5>
+        </div>
+        <div class="card-body p-0" id="tableContainer">
+            @if (employeeCount > 0)
+            {
+                <div class="table-responsive">
+                    <table id="table" class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 60px;"></th>
+                                <th style="width: 60px;" class="sortable" data-column="id">
+                                    ID <i class="bi bi-arrow-down-up text-muted small"></i>
+                                </th>
+                                <th class="sortable" data-column="name">
+                                    Name <i class="bi bi-arrow-down-up text-muted small"></i>
+                                </th>
+                                <th class="text-center sortable" data-column="age">
+                                    Age <i class="bi bi-arrow-down-up text-muted small"></i>
+                                </th>
+                                <th class="text-end sortable" data-column="salary">
+                                    Salary <i class="bi bi-arrow-down-up text-muted small"></i>
+                                </th>
+                                <th>Contact</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center sortable" data-column="hire">
+                                    Hire Date <i class="bi bi-arrow-down-up text-muted small"></i>
+                                </th>
+                                <th>Department</th>
+                                <th class="text-center" style="width: 180px;">Actions</th>
+                                <th class="text-center" style="width: 180px;">Details</th>
+                                <th class="text-center" style="width: 180px;">Update</th>
+                                <th class="text-center" style="width: 180px;">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            @foreach (var item in Model)
+                            {
+                                <tr data-employee-id="@item.Id" data-status="@(item.IsActive && !item.IsDeleted ? "active" : "inactive")" data-department="@(item.Department?.Id ?? 0)">
+                                    <td class="text-center">
+                                        <div class="employee-photo">
+                                            <img src="~/Files/Images/@item.ImageName"
+                                                 alt="@item.Name"
+                                                 onerror="this.src='/images/default-avatar.png'">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary bg-opacity-10 text-dark fw-semibold">#@item.Id</span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">@item.Name</div>
+                                        <small class="text-muted">@item.Address</small>
+                                    </td>
+                                    <td class="text-center">@item.Age</td>
+                                    <td class="text-end fw-semibold text-success">$@item.Salary.ToString("N2")</td>
+                                    <td>
+                                        <div class="mb-1">
+                                            <i class="bi bi-telephone text-muted me-1"></i>
+                                            <small>@item.Phone</small>
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-envelope text-muted me-1"></i>
+                                            <small class="text-muted">@item.Email</small>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.IsActive && !item.IsDeleted)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle me-1"></i>Active
+                                            </span>
+                                        }
+                                        else if (item.IsDeleted)
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-trash me-1"></i>Deleted
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-pause-circle me-1"></i>Inactive
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div>@item.HireDate.ToString("MMM dd, yyyy")</div>
+                                        <small class="text-muted">@item.DateOfCreation.ToString("MMM dd, yyyy")</small>
+                                    </td>
+                                    <td>
+                                        @if (item.Department is not null)
+                                        {
+                                            <span class="badge bg-primary bg-opacity-10 text-primary">
+                                                <i class="bi bi-building me-1"></i>@item.Department.Name
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">No Department</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <partial name="_ButtonPartialViews" model="@item.Id.ToString()" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-person-x display-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted mb-2">No Employees Found</h4>
+                    <p class="text-muted mb-4">Get started by adding your first employee</p>
+                    <a asp-action="Create" asp-controller="Employees" class="btn btn-primary">
+                        <i class="bi bi-person-plus me-2"></i>Add Your First Employee
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
-<a asp-action="Create" asp-controller="Employees" class="btn btn-primary m-4">Create Employee</a>
+<style>
+    /* Statistics Cards */
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-@if (Model.Count() > 0)
-{
-    <table id="table" class="table table-hover table-striped">
-        <thead>
-            <tr>
-                <th>Photo</th>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Salary</th>
-                <th>Address</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Is Active</th>
-                <th>Is Deleted</th>
-                <th>Hire Date</th>
-                <th>Date Of Creation</th>
-                <th>Department Name</th>
-                <th>Details</th>
-                <th>Update</th>
-                <th>Delete</th>
-            </tr>
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
 
-        </thead>
-        <tbody id="table-body">
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td><img style="border-radius:50%; width:35px; height: 35px;" class="w-75" src="~/Files/Images/@item.ImageName" alt=@item.ImageName></img></td>
-                    <td>@item.Id</td>
-                    <td>@item.Name</td>
-                    <td>@item.Age</td>
-                    <td>@item.Salary</td>
-                    <td>@item.Address</td>
-                    <td>@item.Phone</td>
-                    <td>@item.Email</td>
-                    <td>@item.IsActive</td>
-                    <td>@item.IsDeleted</td>
-                    <td>@item.HireDate</td>
-                    <td>@item.DateOfCreation</td>
-                    @if (item.Department is not null)
-                    {
-                        <td>@item.Department.Name</td>
-                    }
-                    else
-                    {
-                        <td>No Department</td>
-                    }
-                    <partial name="_ButtonPartialViews" model="@item.Id.ToString()" />
-                </tr>
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
 
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <div class="alert alert-info">
-        <h4>There are no Employee</h4>
-    </div>
-}
+    /* Employee Photo */
+    .employee-photo {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+    }
+
+        .employee-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    /* Table Styles */
+    .table > :not(caption) > * > * {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.15s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .sortable {
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.15s ease;
+    }
+
+        .sortable:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+    /* Card Styles */
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        padding: 1rem 1.25rem;
+    }
+
+    /* Search Input */
+    .input-group .form-control:focus {
+        box-shadow: none;
+        border-color: #dee2e6;
+    }
+
+    .input-group-text {
+        border-color: #dee2e6;
+    }
+
+    /* Gap utility */
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    .gap-3 {
+        gap: 1rem !important;
+    }
+
+    /* Loading State */
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #0d6efd;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .d-flex.justify-content-between
+
+    {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+
+    .d-flex.justify-content-between > div {
+        width: 100%;
+    }
+
+    .btn-lg {
+        width: 100%;
+    }
+
+    .card-header .d-flex {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    }
+</style>
+
 <script>
     $(document).ready(function () {
         const searchBar = $('#Searchtxt');
         const table = $('#table');
+        const tableBody = $('#table-body');
+        const statusFilter = $('#statusFilter');
+        const departmentFilter = $('#departmentFilter');
+        const clearFiltersBtn = $('#clearFilters');
+        let searchTimeout;
 
+        // AJAX Search with debounce
         searchBar.on('keyup', function (event) {
-            var searchValue = searchBar.val();
+            clearTimeout(searchTimeout);
+            const searchValue = searchBar.val();
 
-            $.ajax({
-                url: '/Employees/Search',
-                type: 'Get',
-                data: { SearchText: searchValue },
-                success: function (result) {
-                    table.html(result);
-                    console.log("hello");
-                },
-                error: function (xhr, status, error) {
-                    console.log(error);
+            // Show loading state
+            if (!$('.loading-overlay').length) {
+                $('#tableContainer').css('position', 'relative');
+                $('#tableContainer').append('<div class="loading-overlay"><div class="spinner"></div></div>');
+            }
+
+            searchTimeout = setTimeout(function() {
+                $.ajax({
+                    url: '/Employees/Search',
+                    type: 'Get',
+                    data: { SearchText: searchValue },
+                    success: function (result) {
+                        table.html(result);
+                        $('.loading-overlay').remove();
+                        updateVisibleCount();
+                        applyClientFilters();
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Search error:', error);
+                        $('.loading-overlay').remove();
+                        showNotification('Search failed. Please try again.', 'error');
+                    }
+                });
+            }, 300); // Debounce for 300ms
+        });
+
+        // Client-side status filter
+        statusFilter.on('change', function() {
+            applyClientFilters();
+        });
+
+        // Client-side department filter
+        departmentFilter.on('change', function() {
+            applyClientFilters();
+        });
+
+        // Clear all filters
+        clearFiltersBtn.on('click', function() {
+            searchBar.val('');
+            statusFilter.val('all');
+            departmentFilter.val('all');
+            applyClientFilters();
+        });
+
+        // Apply client-side filters
+        function applyClientFilters() {
+            const status = statusFilter.val();
+            const department = departmentFilter.val();
+            let visibleCount = 0;
+
+            tableBody.find('tr').each(function() {
+                const row = $(this);
+                const rowStatus = row.data('status');
+                const rowDept = row.data('department').toString();
+                let showRow = true;
+
+                if (status !== 'all' && rowStatus !== status) {
+                    showRow = false;
+                }
+
+                if (department !== 'all' && rowDept !== department) {
+                    showRow = false;
+                }
+
+                if (showRow) {
+                    row.show();
+                    visibleCount++;
+                } else {
+                    row.hide();
                 }
             });
+
+            $('#visibleCount').text(visibleCount);
+            $('#resultCount').text(visibleCount + ' Results');
+        }
+
+        // Update visible count
+        function updateVisibleCount() {
+            const visibleRows = tableBody.find('tr:visible').length;
+            $('#visibleCount').text(visibleRows);
+            $('#resultCount').text(visibleRows + ' Results');
+        }
+
+        // Sortable columns
+        $('.sortable').on('click', function() {
+            const column = $(this).data('column');
+            const tbody = tableBody;
+            const rows = tbody.find('tr').toArray();
+            const columnIndex = $(this).index();
+            const isAscending = $(this).hasClass('asc');
+
+            rows.sort((a, b) => {
+                const aText = $(a).find('td').eq(columnIndex).text().trim();
+                const bText = $(b).find('td').eq(columnIndex).text().trim();
+
+                // Try to parse as numbers
+                const aNum = parseFloat(aText.replace(/[^0-9.-]/g, ''));
+                const bNum = parseFloat(bText.replace(/[^0-9.-]/g, ''));
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return isAscending ? bNum - aNum : aNum - bNum;
+                }
+
+                return isAscending ?
+                    bText.localeCompare(aText) :
+                    aText.localeCompare(bText);
+            });
+
+            $('.sortable').removeClass('asc desc');
+            $(this).addClass(isAscending ? 'desc' : 'asc');
+
+            tbody.html(rows);
         });
+
+        // Notification helper
+        function showNotification(message, type = 'info') {
+            const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+            const notification = $(`
+                <div class="alert ${alertClass} alert-dismissible fade show position-fixed top-0 end-0 m-3" style="z-index: 9999; min-width: 300px;" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `);
+            $('body').append(notification);
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        // Initialize
+        updateVisibleCount();
     });
 </script>

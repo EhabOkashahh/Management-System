@@ -53,6 +53,7 @@ namespace ASP.NET.Assignment.PL.Controllers
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         Email = user.Email,
+                        Image = user.ImageName,
                         Roles = Roles
                     });
                 }
@@ -190,33 +191,6 @@ namespace ASP.NET.Assignment.PL.Controllers
             };
             ViewBag.Id = user.Id;
             return View(dto);
-        }
-        [HttpGet]
-        public async Task<IActionResult> Edit(string? id)
-        {
-            return Details(id).Result;
-        }
-        [HttpPost]
-        public async Task<IActionResult> Edit([FromRoute] string? id, UserToReturnDto model)
-        {
-            ViewBag.id = id;
-            if (ModelState.IsValid)
-            {
-                var user = await _userManager.FindByIdAsync(id);
-                if (user is null) return BadRequest("User not Found!");
-
-                user.UserName = model.UserName;
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                user.Email = model.Email;
-                
-                var res = await _userManager.UpdateAsync(user);
-                if (res.Succeeded)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-            return RedirectToAction(nameof(Index));
         }
         [HttpGet]
         public IActionResult Delete()

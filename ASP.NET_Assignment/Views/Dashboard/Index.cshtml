@@ -1,15 +1,198 @@
-﻿
-@{
-    ViewData["Title"] = "Index";
+﻿@{
+    ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Welcome To Dashboard</h1>
-<div class="cards mt-5">
-    <a asp-action="index" asp-controller="User" class="btn btn-success text-white mb-3" style="width: 18rem; display:flex; justify-content:center; align-items:center">
-        <div class="fw-bolder" style="font-size: 2rem;">Users</div>
-    </a>
-    <a asp-action="index" asp-controller="Role" class="btn btn-success text-white mb-3" style="width: 18rem; display:flex; justify-content:center; align-items:center">
-        <div class="fw-bolder" style="font-size: 2rem;">Roles</div>
-    </a>
+<div class="container-fluid py-4">
+    <div class="dashboard-header mb-5">
+        <h1 class="dashboard-title">
+            <i class="bi bi-speedometer2 me-3"></i>Dashboard
+        </h1>
+        <p class="dashboard-subtitle">Manage your system components</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <a asp-action="Index" asp-controller="Employees" class="dashboard-card">
+                <div class="card-icon bg-primary">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Employees</h3>
+                    <p class="card-description">Manage employee records and information</p>
+                </div>
+                <div class="card-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a asp-action="Index" asp-controller="Department" class="dashboard-card">
+                <div class="card-icon bg-success">
+                    <i class="bi bi-diagram-3-fill"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Departments</h3>
+                    <p class="card-description">Organize and manage departments</p>
+                </div>
+                <div class="card-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a asp-action="Index" asp-controller="User" class="dashboard-card">
+                <div class="card-icon bg-info">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Users</h3>
+                    <p class="card-description">Manage system users and access</p>
+                </div>
+                <div class="card-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a asp-action="Index" asp-controller="Role" class="dashboard-card">
+                <div class="card-icon bg-warning">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <div class="card-content">
+                    <h3 class="card-title">Roles</h3>
+                    <p class="card-description">Configure user roles and permissions</p>
+                </div>
+                <div class="card-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>
+
+<style>
+    .dashboard-header {
+        text-align: center;
+        padding: 2rem 0;
+    }
+
+    .dashboard-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dashboard-subtitle {
+        font-size: 1.125rem;
+        color: #718096;
+        margin: 0;
+    }
+
+    .dashboard-card {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, currentColor);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+            .dashboard-card:hover::before {
+                opacity: 1;
+            }
+
+            .dashboard-card:hover .card-arrow {
+                transform: translateX(5px);
+            }
+
+    .card-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .card-content {
+        flex: 1;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-description {
+        font-size: 0.875rem;
+        color: #718096;
+        margin: 0;
+    }
+
+    .card-arrow {
+        font-size: 1.5rem;
+        color: #cbd5e0;
+        transition: all 0.3s ease;
+    }
+
+    @@media (max-width: 767.98px) {
+        .dashboard-title
+
+    {
+        font-size: 2rem;
+    }
+
+    .dashboard-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .card-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
+    }
+
+    .card-arrow {
+        display: none;
+    }
+
+    }
+</style>

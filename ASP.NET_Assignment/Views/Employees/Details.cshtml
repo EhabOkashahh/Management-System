@@ -1,100 +1,299 @@
 ﻿@model CreateEmployeeDTO
 @{
-
+    ViewData["Title"] = "Employee Details";
     var departments = new SelectList(ViewData["Departments"] as IEnumerable<Department>, "Id", "Name");
 }
 
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">Employee Details</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Employees">Employees</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Details</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@ViewData["Id"]" class="btn btn-warning">
+                <i class="bi bi-pencil-square me-2"></i>Edit
+            </a>
+            <a asp-action="Delete" asp-route-id="@ViewData["Id"]" class="btn btn-danger">
+                <i class="bi bi-trash me-2"></i>Delete
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-circle me-2"></i>Employee Photo
+                    </h5>
+                </div>
+                <div class="card-body text-center p-4">
+                    <div class="employee-photo-container mb-3">
+                        <img id="employeePhoto"
+                             src="~/Files/Images/@Model.ImageName"
+                             alt="Employee Photo"
+                             onerror="this.src='/images/default-avatar.png'">
+                    </div>
+
+                    @if (Model.ImageName != "DefaultPFP.png")
+                    {
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@ViewData["Id"]">
+                                <i class="bi bi-upload me-1"></i>Change Photo
+                            </a>
+                            <a class="btn btn-danger btn-sm" asp-action="DeleteImage" asp-route-id="@ViewData["Id"]">
+                                <i class="bi bi-trash me-1"></i>Remove
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@ViewData["Id"]">
+                                <i class="bi bi-upload me-1"></i>Add Photo
+                            </a>
+                            <button class="btn btn-danger btn-sm" disabled>
+                                <i class="bi bi-trash me-1"></i>Remove
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-shield-check me-2"></i>Status Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="status-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Active Status</span>
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>Active
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Inactive
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    <div class="status-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Account Status</span>
+                            @if (Model.IsDeleted)
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-trash me-1"></i>Deleted
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle me-1"></i>Active
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-badge me-2"></i>Personal Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Full Name</label>
+                            <input asp-for="Name" class="form-control form-control-lg" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Age</label>
+                            <input asp-for="Age" class="form-control form-control-lg" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Email Address</label>
+                            <input asp-for="Email" class="form-control form-control-lg" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Phone Number</label>
+                            <input asp-for="Phone" class="form-control form-control-lg" readonly>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold text-muted small">Address</label>
+                            <input asp-for="Address" class="form-control form-control-lg" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-briefcase me-2"></i>Employment Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Department</label>
+                            <select class="form-select form-select-lg" asp-for="@Model.DepartmentId" asp-items="departments" disabled>
+                                <option value="">-- Select Department --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Salary</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Salary" class="form-control" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Hire Date</label>
+                            <input asp-for="HireDate" class="form-control form-control-lg" type="date" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold text-muted small">Created At</label>
+                            <input asp-for="DateOfCreation" class="form-control form-control-lg" type="datetime-local" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@ViewData["Id"]" class="btn btn-warning btn-lg">
+                    <i class="bi bi-pencil-square me-2"></i>Edit Employee
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-arrow-left me-2"></i>Back to List
+                </a>
+                <a asp-action="Delete" asp-route-id="@ViewData["Id"]" class="btn btn-outline-danger btn-lg ms-auto">
+                    <i class="bi bi-trash me-2"></i>Delete Employee
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
-    .disabled-link {
-        pointer-events: none; 
-        color: gray;
-        text-decoration: none;
-        cursor: not-allowed;
-        opacity: 0.6;
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        padding: 1rem 1.25rem;
+    }
+
+    .employee-photo-container {
+        width: 250px;
+        height: 250px;
+        margin: 0 auto;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid #e9ecef;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .employee-photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .form-control:read-only,
+    .form-select:disabled {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        cursor: default;
+    }
+
+    .status-item {
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 0.375rem;
+    }
+
+    .badge {
+        padding: 0.5rem 0.75rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    .btn-lg {
+        padding: 0.625rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+    }
+
+    .input-group-text {
+        background-color: #e9ecef;
+        font-weight: 600;
+    }
+
+    @@media (max-width: 992px) {
+        .col-lg-4
+
+    {
+        margin-bottom: 1rem;
+    }
+
+    .d-flex.gap-2 {
+        flex-wrap: wrap;
+    }
+
+    }
+
+    @@media (max-width: 768px) {
+        .d-flex.gap-2.justify-content-between
+
+    {
+        flex-direction: column;
+    }
+
+    .d-flex.gap-2 .btn {
+        width: 100%;
+    }
+
+    .d-flex.gap-2 .ms-auto {
+        margin-left: 0 !important;
+    }
+
+    .employee-photo-container {
+        width: 180px;
+        height: 180px;
+    }
+
+    .d-flex.gap-2:not(.justify-content-center) {
+        flex-direction: column;
+    }
+
     }
 </style>
-
-
-
-<h1>Details Page</h1>
-
-<center>
-    <div class="ImagePreview">
-        <h4>Employee Image</h4>
-        <img class="mb-3" style="border-radius:50%; width: 400px; height: 400px;" src="~/Files/Images/@Model.ImageName" />
-        @if (Model.ImageName != "DefaultPFP.png")
-        {
-            <div>
-                <a class="btn btn-warning" asp-action="Edit">Add Image</a>
-                <a class="btn btn-danger" asp-action="DeleteImage" asp-route-id="@ViewData["Id"]">Delete Image</a>
-            </div>
-        }
-        else
-        {
-            <div>
-                <a class="btn btn-warning" asp-action="Edit" asp-route-id="@ViewData["Id"]">Add Image</a>
-                <a class="disabled-link btn btn-danger">Delete Image</a>
-            </div>
-        }
-    </div>
-</center>
-
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" placeholder="Enter Name" readonly>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Age" class="form-label"></label>
-        <input asp-for="Age" class="form-control" placeholder="Enter Age" readonly>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Salary" class="form-label"></label>
-        <input asp-for="Salary" class="form-control" placeholder="Enter Salary" readonly>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Address" class="form-label"></label>
-        <input asp-for="Address" class="form-control" placeholder="Enter Address" readonly>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Phone" class="form-label"></label>
-        <input asp-for="Phone" class="form-control" placeholder="Enter Phone Number" readonly>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" placeholder="Enter Email" readonly>
-    </div>
-
-    <div class="form-check mb-3">
-        <input asp-for="IsActive" class="form-check-input" type="checkbox" disabled>
-        <label asp-for="IsActive" class="form-check-label" ></label>
-    </div>
-
-    <div class="form-check mb-3">
-        <input asp-for="IsDeleted" class="form-check-input" type="checkbox" disabled>
-        <label asp-for="IsDeleted" class="form-check-label" ></label>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="HireDate" class="form-label"></label>
-        <input asp-for="HireDate" class="form-control" type="date" readonly>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="DateOfCreation" class="form-label">Create at</label>
-        <input asp-for="DateOfCreation" class="form-control" type="datetime-local" readonly>
-    </div>
-
-<div>
-    <label asp-for="@Model.DepartmentId"></label>
-    <select class="form-select" asp-for="@Model.DepartmentId" asp-items="departments" disabled>
-        <option value=@null>-- Select Department --</option>
-    </select>
-</div>
-    <a asp-action="Edit" asp-route-id="@ViewData["Id"] "type="submit" class="btn btn-warning mt-2">Edit</a>
-    <a class="btn btn-light mt-2" asp-action="Index">Back To List</a>
-</div>  

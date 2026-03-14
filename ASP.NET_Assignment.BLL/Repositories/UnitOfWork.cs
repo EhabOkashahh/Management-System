@@ -22,6 +22,7 @@ namespace ASP.NET_Assignment.BLL.Repositories
             _context = Context;
             DepartmentRepository = new Lazy<IDepartmentRepository>(() => new DepartmentRepository(_context));
             EmployeeRepositroy = new Lazy<IEmployeeRepositroy>(() => new EmployeeRepository(_context));
+
             //EmployeeRepository = new EmployeeRepository(_context);
          //Lazy<DepartmentRepository> lazyobj = new Lazy<DepartmentRepository>(() => new DepartmentRepository(_context)); => this is used inside to tell the CLR Don't use the object until its called 
          // to avoid this scenario => when i call "UnitOfWork" to use DepartmentRepo the EmployeeRepo will call also but i will not use so it will UnderTheHood create an LazyObject

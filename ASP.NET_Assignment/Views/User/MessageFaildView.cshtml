@@ -1,8 +1,187 @@
-﻿
-@{
-    ViewData["Title"] = "MessageFaildView";
+﻿@{
+    ViewData["Title"] = "Message Failed";
 }
 
-<h1 class="text-danger">Oops!</h1>
-<p class="fw-bolder text-danger">Unable to send SMS. The phone number may be invalid or unreachable.</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5 text-center">
+                    <!-- Error Icon with Animation -->
+                    <div class="mb-4 error-icon-container">
+                        <div class="error-icon-circle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" class="text-danger" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z" />
+                            </svg>
+                        </div>
+                    </div>
 
+                    <!-- Title -->
+                    <h2 class="fw-bold text-danger mb-3">Message Failed to Send</h2>
+
+                    <!-- Description -->
+                    <p class="text-muted mb-4 lead">
+                        We couldn't deliver your SMS message. This could be due to an invalid phone number or network issues.
+                    </p>
+
+                    <!-- Reasons Box -->
+                    <div class="alert alert-light border border-danger bg-danger bg-opacity-10 text-start mb-4">
+                        <h6 class="fw-bold text-danger mb-3">
+                            <i class="bi bi-info-circle-fill me-2"></i>Common Reasons:
+                        </h6>
+                        <ul class="mb-0 ps-3 text-muted small">
+                            <li>The phone number format is incorrect</li>
+                            <li>The recipient's phone is turned off or out of service</li>
+                            <li>The number is not registered or doesn't exist</li>
+                            <li>Network connectivity issues</li>
+                            <li>The SMS service is temporarily unavailable</li>
+                        </ul>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-3">
+                        <a asp-action="Index" asp-controller="Home" class="btn btn-danger btn-lg fw-semibold">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Try Again
+                        </a>
+
+                        <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary btn-lg fw-semibold">
+                            <i class="bi bi-house-door me-2"></i>Back to Dashboard
+                        </a>
+
+                        <a href="mailto:support@example.com" class="btn btn-link text-muted">
+                            <i class="bi bi-envelope me-2"></i>Contact Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Text -->
+            <div class="text-center mt-4">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-lightbulb me-1"></i>
+                    <strong>Tip:</strong> Make sure to include the country code (e.g., +1 for US, +20 for Egypt)
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+    }
+
+    .card {
+        border-radius: 1rem;
+        animation: slideInUp 0.4s ease;
+    }
+
+    @@keyframes slideInUp {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .error-icon-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .error-icon-circle {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        position: relative;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @@keyframes pulse {
+        0%, 100%
+
+    {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 20px rgba(220, 53, 69, 0);
+    }
+
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+    }
+
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(108, 117, 125, 0.2);
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+
+    .alert {
+        border-radius: 0.75rem;
+    }
+
+        .alert ul {
+            margin-bottom: 0;
+        }
+
+            .alert ul li {
+                margin-bottom: 0.5rem;
+                line-height: 1.6;
+            }
+
+                .alert ul li:last-child {
+                    margin-bottom: 0;
+                }
+
+    @@media (max-width: 576px) {
+        .card-body
+
+    {
+        padding: 2rem 1.5rem !important;
+    }
+
+    .error-icon-circle {
+        width: 100px;
+        height: 100px;
+    }
+
+        .error-icon-circle svg {
+            width: 50px;
+            height: 50px;
+        }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    }
+</style>

@@ -1,12 +1,486 @@
 ﻿@model CreateDepartmentDto
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Department";
 }
 
-<h1 class="mb-5 mt-3">Create Department</h1>
-<form asp-action="Create">
-        <partial name="PartialViews/_FormView">
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">Create New Department</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Department">Departments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create</li>
+                </ol>
+            </nav>
+        </div>
+        <div>
+            <a class="btn btn-outline-secondary" asp-action="Index">
+                <i class="bi bi-arrow-left me-2"></i>Back to List
+            </a>
+        </div>
+    </div>
 
-        <button asp-controller="Department" asp-action="Create" type="submit" class="btn btn-primary mt-2">Create</button>
-        <a class="btn btn-light mt-2" asp-action="Index">Back To List</a> 
-    </form>
+
+    <!-- Create Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-building me-2"></i>Department Information
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" id="createDepartmentForm">
+                        <!-- Validation Summary -->
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Please correct the following errors:</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+
+                        <!-- Form Fields from Partial -->
+                        <partial name="PartialViews/_FormView" />
+
+                        <!-- Tips & Guidelines Card -->
+                        <div class="card bg-light border-0 mt-4 mb-4">
+                            <div class="card-body">
+                                <h6 class="text-primary mb-3">
+                                    <i class="bi bi-lightbulb me-2"></i>Quick Tips
+                                </h6>
+                                <ul class="mb-0 text-muted small">
+                                    <li>Use a unique department code for easy identification</li>
+                                    <li>Choose a clear, descriptive name</li>
+                                    <li>Ensure all required fields are filled correctly</li>
+                                    <li>Double-check the information before submitting</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary btn-lg" id="createBtn">
+                                <i class="bi bi-plus-circle me-2"></i>Create Department
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary btn-lg" id="resetBtn">
+                                <i class="bi bi-arrow-counterclockwise me-2"></i>Clear Form
+                            </button>
+                            <a class="btn btn-outline-danger btn-lg ms-auto" asp-action="Index">
+                                <i class="bi bi-x-circle me-2"></i>Cancel
+                            </a>
+                        </div>
+
+                        <!-- Required Fields Note -->
+                        <div class="alert alert-info mt-3 d-flex align-items-start" role="alert">
+                            <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                            <div>
+                                <small><strong>Note:</strong> Fields marked with an asterisk (<span class="text-danger">*</span>) are required.</small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-5">
+                <div class="success-checkmark mb-4">
+                    <div class="check-icon">
+                        <span class="icon-line line-tip"></span>
+                        <span class="icon-line line-long"></span>
+                        <div class="icon-circle"></div>
+                        <div class="icon-fix"></div>
+                    </div>
+                </div>
+                <h4 class="mb-2">Department Created!</h4>
+                <p class="text-muted mb-4">The new department has been successfully created.</p>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Progress Steps */
+    .progress-steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
+
+    .step-circle {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        z-index: 1;
+    }
+
+    .step.active .step-circle {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
+
+    .step-label {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .step.active .step-label {
+        color: #0d6efd;
+        font-weight: 600;
+    }
+
+    .step-line {
+        width: 100px;
+        height: 2px;
+        background: #e9ecef;
+        margin: 0 1rem;
+    }
+
+    /* Feature Icons */
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    /* Card Styles */
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        padding: 1rem 1.25rem;
+    }
+
+    /* Button Styles */
+    .btn-lg {
+        padding: 0.625rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+    }
+
+    /* Loading State */
+    .btn.loading {
+        position: relative;
+        color: transparent;
+    }
+
+        .btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spinner 0.6s linear infinite;
+        }
+
+    @@keyframes spinner {
+        to
+
+    {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    /* Success Checkmark Animation */
+    .success-checkmark {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+    }
+
+        .success-checkmark .check-icon {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            border-radius: 50%;
+            box-sizing: content-box;
+            border: 4px solid #198754;
+        }
+
+            .success-checkmark .check-icon::before {
+                top: 3px;
+                left: -2px;
+                width: 30px;
+                transform-origin: 100% 50%;
+                border-radius: 100px 0 0 100px;
+            }
+
+            .success-checkmark .check-icon::after {
+                top: 0;
+                left: 30px;
+                width: 60px;
+                transform-origin: 0 50%;
+                border-radius: 0 100px 100px 0;
+                animation: rotate-circle 4.25s ease-in;
+            }
+
+        .success-checkmark .icon-line {
+            height: 5px;
+            background-color: #198754;
+            display: block;
+            border-radius: 2px;
+            position: absolute;
+            z-index: 10;
+        }
+
+            .success-checkmark .icon-line.line-tip {
+                top: 46px;
+                left: 14px;
+                width: 25px;
+                transform: rotate(45deg);
+                animation: icon-line-tip 0.75s;
+            }
+
+            .success-checkmark .icon-line.line-long {
+                top: 38px;
+                right: 8px;
+                width: 47px;
+                transform: rotate(-45deg);
+                animation: icon-line-long 0.75s;
+            }
+
+        .success-checkmark .icon-circle {
+            top: -4px;
+            left: -4px;
+            z-index: 10;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            position: absolute;
+            box-sizing: content-box;
+            border: 4px solid rgba(25, 135, 84, 0.5);
+        }
+
+        .success-checkmark .icon-fix {
+            top: 8px;
+            width: 5px;
+            left: 26px;
+            z-index: 1;
+            height: 85px;
+            position: absolute;
+            transform: rotate(-45deg);
+            background-color: #ffffff;
+        }
+
+   @@keyframes icon-line-tip {
+        0%
+
+    {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+
+    54% {
+        width: 0;
+        left: 1px;
+        top: 19px;
+    }
+
+    70% {
+        width: 50px;
+        left: -8px;
+        top: 37px;
+    }
+
+    84% {
+        width: 17px;
+        left: 21px;
+        top: 48px;
+    }
+
+    100% {
+        width: 25px;
+        left: 14px;
+        top: 46px;
+    }
+
+    }
+
+    @@keyframes icon-line-long {
+        0%
+
+    {
+        width: 0;
+        right: 46px;
+        top: 54px;
+    }
+
+    65% {
+        width: 0;
+        right: 46px;
+        top: 54px;
+    }
+
+    84% {
+        width: 55px;
+        right: 0px;
+        top: 35px;
+    }
+
+    100% {
+        width: 47px;
+        right: 8px;
+        top: 38px;
+    }
+
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .d-flex.gap-2
+
+    {
+        flex-direction: column;
+    }
+
+    .d-flex.gap-2 .btn {
+        width: 100%;
+    }
+
+    .d-flex.gap-2 .ms-auto {
+        margin-left: 0 !important;
+    }
+
+    .progress-steps {
+        padding: 1rem 0;
+    }
+
+    .step-line {
+        width: 50px;
+        margin: 0 0.5rem;
+    }
+
+    .step-circle {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+
+    .step-label {
+        font-size: 0.75rem;
+    }
+
+    }
+</style>
+
+@section ValidationSection {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Form submission with loading state
+            $('#createDepartmentForm').on('submit', function(e) {
+                if ($(this).valid()) {
+                    const createBtn = $('#createBtn');
+                    createBtn.addClass('loading').prop('disabled', true);
+                }
+            });
+
+            // Reset button with confirmation
+            $('#resetBtn').on('click', function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure you want to clear all fields?')) {
+                    $('#createDepartmentForm')[0].reset();
+                    // Clear validation messages
+                    $('#createDepartmentForm').validate().resetForm();
+                    // Remove validation classes
+                    $('.form-control').removeClass('is-valid is-invalid');
+                }
+            });
+
+            // Unsaved changes warning
+            let formChanged = false;
+            $('#createDepartmentForm :input').on('change', function() {
+                formChanged = true;
+            });
+
+            // Warn before leaving with unsaved changes
+            $(window).on('beforeunload', function(e) {
+                if (formChanged) {
+                    return 'You have unsaved changes. Are you sure you want to leave?';
+                }
+            });
+
+            // Don't warn when form is submitted
+            $('#createDepartmentForm').on('submit', function() {
+                formChanged = false;
+            });
+
+            // Custom validation styling
+            $.validator.setDefaults({
+                errorElement: 'span',
+                errorClass: 'invalid-feedback',
+                highlight: function(element) {
+                    $(element).addClass('is-invalid').removeClass('is-valid');
+                },
+                unhighlight: function(element) {
+                    $(element).removeClass('is-invalid').addClass('is-valid');
+                }
+            });
+
+            // Auto-dismiss alerts after 7 seconds
+            setTimeout(function() {
+                $('.alert-danger').fadeOut('slow');
+            }, 7000);
+
+            // Form field animations
+            $('.form-control, .form-select').on('focus', function() {
+                $(this).parent().addClass('field-focused');
+            }).on('blur', function() {
+                $(this).parent().removeClass('field-focused');
+            });
+        });
+    </script>
+}

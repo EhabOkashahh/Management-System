@@ -1,83 +1,185 @@
 ﻿@model CreateDepartmentDto
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Department Details";
     var Employees = ViewData["Employees"] as IEnumerable<Employee>;
+    var activeEmployees = Employees?.Where(e => e.DepartmentId == ViewBag.Id && e.IsActive && !e.IsDeleted).ToList() ?? new List<Employee>();
 }
 
-<h1 class="mb-5">Details Page</h1>
-<form>
-    <div class="mb-3">
-        <label asp-for="Code" class="form-label"></label>
-        <input asp-for="Code" class="form-control" readonly>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 mb-1">Department Details</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Department">Departments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Details</li>
+                </ol>
+            </nav>
+        </div>
+        <div>
+            <a class="btn btn-warning" asp-route-id="@ViewBag.Id" asp-action="Edit">
+                <i class="bi bi-pencil-square me-1"></i>Edit Department
+            </a>
+            <a class="btn btn-outline-secondary" asp-action="Index" asp-controller="Department">
+                <i class="bi bi-arrow-left me-1"></i>Back to List
+            </a>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" readonly>
-    </div>
-    <div class="mb-3">
-        <label asp-for="DateOfCreation" class="form-label">Create at</label>
-        <input asp-for="DateOfCreation" class="form-control" readonly>
-    </div>
-    <label>Employees</label>
-    <div>
-        @if (Employees.Where(E => E.DepartmentId == ViewBag.Id && E.IsActive && !E.IsDeleted).Count() > 0)
-        {
-            <table class="table table-hover table-striped" >
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Age</th>
-                        <th>Salary</th>
-                        <th>Address</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Is Active</th>
-                        <th>Is Deleted</th>
-                        <th>Hire Date</th>
-                        <th>Date Of Creation</th>
-                        <th>Department Name</th>
-                    </tr>
 
-                </thead>
-                <tbody>
-                    @foreach (var item in Employees)
-                    {
-                        if (item.DepartmentId == @ViewBag.Id && item.IsActive && !item.IsDeleted){
-                            <tr>
-                                <td>@item.Id</td>
-                                <td>@item.Name</td>
-                                <td>@item.Age</td>
-                                <td>@item.Salary</td>
-                                <td>@item.Address</td>
-                                <td>@item.Phone</td>
-                                <td>@item.Email</td>
-                                <td>@item.IsActive</td>
-                                <td>@item.IsDeleted</td>
-                                <td>@item.HireDate</td>
-                                <td>@item.DateOfCreation</td>
-                                @if (item.Department is not null)
-                                {
-                                    <td>@item.Department.Name</td>
-                                }
-                                else
-                                {
-                                    <td>No Department</td>
-                                }
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <div class="alert alert-info">
-                <h4>There are no Active Employee Work on this department at this moment</h4>
+    <!-- Department Information Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-building me-2"></i>Department Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label text-muted small fw-bold">Department Code</label>
+                    <div class="form-control-plaintext fs-5 fw-semibold">@Model.Code</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small fw-bold">Department Name</label>
+                    <div class="form-control-plaintext fs-5 fw-semibold">@Model.Name</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small fw-bold">Created On</label>
+                    <div class="form-control-plaintext fs-5">
+                        @Model.DateOfCreation.ToString("MMM dd, yyyy")
+                    </div>
+                </div>
             </div>
-        }
-
+        </div>
     </div>
-    <a class="btn btn-warning mt-2" asp-route-id ="@ViewBag.Id" asp-action="Edit">Edit</a>
-    <a class="btn btn-light mt-2" asp-action="index" asp-controller="Department">Back To List</a>
-</form>
+
+    <!-- Employees Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i>Employees</h5>
+            <span class="badge bg-light text-success">@activeEmployees.Count Active Employee(s)</span>
+        </div>
+        <div class="card-body p-0">
+            @if (activeEmployees.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center" style="width: 60px;">ID</th>
+                                <th>Name</th>
+                                <th class="text-center">Age</th>
+                                <th class="text-end">Salary</th>
+                                <th>Contact</th>
+                                <th class="text-center">Hire Date</th>
+                                <th>Department</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var employee in activeEmployees)
+                            {
+                                <tr>
+                                    <td class="text-center fw-bold">#@employee.Id</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white me-2">
+                                                @employee.Name?.Substring(0, 1).ToUpper()
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold">@employee.Name</div>
+                                                <small class="text-muted">@employee.Address</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">@employee.Age</td>
+                                    <td class="text-end fw-semibold">$@employee.Salary.ToString("N2")</td>
+                                    <td>
+                                        <div>
+                                            <i class="bi bi-telephone text-muted me-1"></i>
+                                            <span>@employee.Phone</span>
+                                        </div>
+                                        <div>
+                                            <i class="bi bi-envelope text-muted me-1"></i>
+                                            <small class="text-muted">@employee.Email</small>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info">@employee.HireDate.ToString("MMM dd, yyyy")</span>
+                                    </td>
+                                    <td>
+                                        @if (employee.Department is not null)
+                                        {
+                                            <span class="badge bg-secondary">@employee.Department.Name</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">No Department</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="p-5 text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-people display-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted">No Active Employees</h4>
+                    <p class="text-muted mb-0">There are no active employees working in this department at this moment.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+        padding: 1rem 1.25rem;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: 0.75rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+    }
+
+    @@media (max-width: 768px) {
+        .d-flex.justify-content-between
+
+    {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .d-flex.justify-content-between > div:last-child {
+        margin-top: 1rem;
+    }
+
+    }
+</style>

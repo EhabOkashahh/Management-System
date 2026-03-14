@@ -8,6 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Shared\_DeleteButtonPartialViews.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\Shared\_DeleteButtonPartialViews.cshtml" />
+    <None Include="Views\Shared\_DetailsButtonPartialViews.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="MailKit" Version="4.14.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.20" />
@@ -23,6 +32,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ASP.NET_Assignment.BLL\ASP.NET_Assignment.BLL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Files\Images\" />
   </ItemGroup>
 
 </Project>

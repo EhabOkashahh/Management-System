@@ -130,9 +130,10 @@ namespace ASP.NET.Assignment.PL.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete([FromRoute] int? id)
+        public async Task<IActionResult> Delete([FromRoute] int? id)
         {
-            return View();
+            var employee = await _unitOfWork.EmployeeRepositroy.Value.GetAsync(id.Value);
+            return View(employee);
         }
 
         [HttpPost]
@@ -153,7 +154,7 @@ namespace ASP.NET.Assignment.PL.Controllers
                     if (count.Result > 0) return RedirectToAction(nameof(Index));
                     {
                         ViewBag.ErrorMessage = "Something Wrong Happend";
-                        return Delete(id);
+                        return await Delete(id);
                     }
                 }
                 else
@@ -166,13 +167,12 @@ namespace ASP.NET.Assignment.PL.Controllers
                 if (!employee.IsDeleted)
                 {
                     employee.IsActive = false;
-                    employee.IsDeleted = true;
-                    await _unitOfWork.EmployeeRepositroy.Value.Update(employee);
+                    _unitOfWork.EmployeeRepositroy.Value.Delete(employee);
                     var count = _unitOfWork.ApplyToDB();
                     if (count.Result > 0) return RedirectToAction(nameof(Index));
                     {
                         ViewBag.ErrorMessage = "Something Wrong Happend";
-                        return Delete(id);
+                        return await Delete(id);
                     }
                 }
                 else
